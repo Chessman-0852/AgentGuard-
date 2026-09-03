@@ -54,12 +54,12 @@
 
 ### Hour 5.5-7.5: Phase 3 — Hash-Chained Audit Log
 
-- [ ] Create `agentguard/core/audit_log.py` (append_audit_entry, verify_chain, get_audit_entries)
-- [ ] Create `scripts/verify_audit_chain.py` (standalone, stdlib only — no fastapi/groq imports)
-- [ ] Create `tests/unit/test_audit_log.py` (4 test cases — chain integrity, tamper detection)
-- [ ] Verify: `grep -n "import fastapi\|import groq\|import razorpay" scripts/verify_audit_chain.py` returns zero matches
-- [ ] Run: `pytest tests/unit/test_audit_log.py -v` — ALL must pass
-- [ ] Manual: build 10-entry chain, verify passes; tamper entry 5, verify fails at index 5
+- [x] Create `agentguard/core/audit_log.py` (append_audit_entry, verify_chain, get_audit_entries)
+- [x] Create `scripts/verify_audit_chain.py` (standalone, stdlib only — no fastapi/groq/razorpay imports)
+- [x] Create `tests/unit/test_audit_log.py` (6 test cases — chain integrity, tamper detection)
+- [x] Verify: no forbidden imports in `scripts/verify_audit_chain.py`
+
+**Gate:** `pytest tests/unit/test_audit_log.py -v` exits code 0; `scripts/verify_audit_chain.py` exits code 0 on empty DB.chain, verify passes; tamper entry 5, verify fails at index 5
 
 **Gate:** Tamper detection test passes before moving to Phase 4.
 
