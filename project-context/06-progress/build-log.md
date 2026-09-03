@@ -107,6 +107,32 @@ Completed all foundation components:
 
 ---
 
+### [2026-09-03 20:28 IST] [FAILURE + FIX] test_at_cap_is_allowed failed on first run
+
+**Error:** `PolicyResult(passed=False, reason='confirmation_required')`
+
+**Root cause:** Test intent used `max_amount_paise=700000` (7000 INR) which is above the `requires_human_confirmation_above_paise=500000` (5000 INR) threshold. Rule 4 (confirmation) correctly fired before the transaction-cap boundary could be verified. The engine was correct; the test was misconfigured.
+
+**Fix:** Isolated the transaction-cap boundary test by setting `requires_human_confirmation_above_paise=0` (disabled) in that specific test case.
+
+---
+
+### [2026-09-03 20:30 IST] [MILESTONE] Phase 2 — Deterministic Policy Gates Complete
+
+All four gate modules implemented and fully tested:
+- `agentguard/core/policy_engine.py` — 5 deterministic rules, no LLM calls
+- `agentguard/core/cart_verifier.py` — SHA-256 hash snapshot + diff, append-only
+- `agentguard/core/risk_checker.py` — advisory anomaly z-score only, NEVER blocks alone
+- `agentguard/core/idempotency_guard.py` — INSERT-then-catch-IntegrityError (race-safe)
+
+**Design note (idempotency):** INSERT-then-catch-IntegrityError is intentional. SELECT-then-INSERT has a TOCTOU race window. The UNIQUE PRIMARY KEY makes the INSERT atomic — only one concurrent thread wins. Documented here as security-critical non-obvious design.
+
+**Design note (anomaly score):** `compute_anomaly_score()` is advisory only. Returns 0.0 if fewer than 5 historical transactions. Appears in the audit log but NEVER contributes to a block decision.
+
+`pytest tests/unit/` → **33 passed, 0 failed, 0 regressions.**
+
+---
+
 ### [TEMPLATE — copy for each entry]
 
 **[YYYY-MM-DD HH:MM IST] [TYPE] Short description**

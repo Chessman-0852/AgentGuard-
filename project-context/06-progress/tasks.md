@@ -40,15 +40,15 @@
 
 ### Hour 2.5-5.5: Phase 2 — Deterministic Gates
 
-- [ ] Create `agentguard/core/policy_engine.py` (check_policy — 5 rules)
-- [ ] Create `agentguard/core/cart_verifier.py` (take_cart_snapshot, verify_cart_integrity)
-- [ ] Create `agentguard/core/risk_checker.py` (check_risk, compute_anomaly_score)
-- [ ] Create `agentguard/core/idempotency_guard.py` (check_and_reserve, mark_executed, mark_failed)
-- [ ] Create `tests/unit/test_policy_engine.py` (9 test cases — boundary values)
-- [ ] Create `tests/unit/test_cart_verifier.py` (4 test cases — hash determinism, tamper)
-- [ ] Create `tests/unit/test_risk_checker.py` (2 test cases)
-- [ ] Create `tests/unit/test_idempotency_guard.py` (4 test cases — race condition, retry)
-- [ ] Run: `pytest tests/unit/ -v` — ALL must pass before moving to Phase 3
+- [x] Create `agentguard/core/policy_engine.py` (check_policy — 5 rules)
+- [x] Create `agentguard/core/cart_verifier.py` (take_cart_snapshot, verify_cart_integrity)
+- [x] Create `agentguard/core/risk_checker.py` (check_risk, compute_anomaly_score)
+- [x] Create `agentguard/core/idempotency_guard.py` (check_and_reserve, mark_executed, mark_failed)
+- [x] Create `tests/unit/test_policy_engine.py` (10 test cases — boundary values)
+- [x] Create `tests/unit/test_cart_verifier.py` (6 test cases — hash determinism, tamper, DB)
+- [x] Create `tests/unit/test_risk_checker.py` (3 test cases)
+- [x] Create `tests/unit/test_idempotency_guard.py` (5 test cases — race condition, retry, cross-agent)
+- [x] Run: `pytest tests/unit/ -v` — 33/33 PASSED
 
 **Gate:** `pytest tests/unit/ -v` exits with code 0. No skipped tests.
 
