@@ -137,6 +137,14 @@ def process_intent(request: IntentRequest, db: Session = Depends(get_db)):
     )
     db.commit()
 
+    # If the key already existed, use the persisted intent_id to satisfy foreign keys
+    existing_row = db.execute(
+        text("SELECT intent_id FROM intents WHERE idempotency_key = :k"),
+        {"k": intent.idempotency_key}
+    ).fetchone()
+    if existing_row:
+        intent.intent_id = existing_row[0]
+
     gate_start = time.time()
 
     # -----------------------------------------------------------------------
@@ -171,6 +179,26 @@ def process_intent(request: IntentRequest, db: Session = Depends(get_db)):
     # Stage 3: Cart Snapshot + Integrity Verification
     # -----------------------------------------------------------------------
     cart = _get_synthetic_cart(intent.intent_id, intent.category, intent.max_amount_paise)
+    
+    # Enforce budget invariant: cart total cannot exceed authorized max_amount_paise
+    if cart.total_paise() > intent.max_amount_paise:
+        cart_result = CartIntegrityResult(
+            passed=False,
+            reason="exceeds_transaction_cap",
+            changed_fields=["price_paise"],
+        )
+        append_audit_entry(
+            intent, constants.DECISION_BLOCKED,
+            policy_result, cart_result, NULL_RISK, NULL_IDEM, NULL_PAYMENT, db
+        )
+        return IntentResponse(
+            intent_id=intent.intent_id,
+            status="blocked",
+            block_reason="exceeds_transaction_cap",
+            block_explanation="The items in the cart exceed your authorized budget ceiling.",
+            bounded_intent=intent.model_dump(mode="json"),
+        )
+
     take_cart_snapshot(intent.intent_id, cart, db)
     # Verify immediately (for demo: simulates the auth→exec time gap)
     cart_result = verify_cart_integrity(intent.intent_id, cart, db)
@@ -320,4 +348,55 @@ def get_policy_view():
         "max_requests_per_minute_per_agent": p.max_requests_per_minute_per_agent,
         "idempotency_key_ttl_seconds": p.idempotency_key_ttl_seconds,
         "all_blocked": p.all_blocked,
+    }
+
+
+@router.post("/demo/cart-tamper")
+def demonstrate_cart_tamper(db: Session = Depends(get_db)):
+    """
+    Demo-only endpoint: create a cart snapshot, then verify against a tampered cart.
+    Returns the CartIntegrityResult showing the detected tamper.
+    Used during the demo and integration test suite to prove cart integrity check.
+    """
+    import uuid
+    from datetime import datetime, timezone
+    from agentguard.models import Cart, CartItem
+    from agentguard.core.cart_verifier import take_cart_snapshot, verify_cart_integrity
+
+    intent_id = str(uuid.uuid4())
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    db.execute(
+        text("""
+            INSERT INTO intents (intent_id, agent_id, raw_input, idempotency_key, status, created_at, expires_at)
+            VALUES (:iid, 'demo-agent', 'cart tamper demo', :key, 'parsed', :now, :exp)
+        """),
+        {"iid": intent_id, "key": f"demo-{intent_id[:8]}", "now": now_iso, "exp": 9999999999.0}
+    )
+    db.commit()
+
+    # Authorized cart: 1 running shoe at 3,500 INR (350,000 paise)
+    authorized_cart = Cart(
+        intent_id=intent_id,
+        merchant_id="merchant-001",
+        items=[CartItem(sku="SHOE-001", name="Running Shoes Pro", price_paise=350000, quantity=1, merchant_id="merchant-001")]
+    )
+    take_cart_snapshot(intent_id, authorized_cart, db)
+
+    # Tampered cart: same item but price altered to 5,000 INR (500,000 paise)
+    tampered_cart = Cart(
+        intent_id=intent_id,
+        merchant_id="merchant-001",
+        items=[CartItem(sku="SHOE-001", name="Running Shoes Pro", price_paise=500000, quantity=1, merchant_id="merchant-001")]
+    )
+
+    result = verify_cart_integrity(intent_id, tampered_cart, db)
+    return {
+        "scenario": "cart_tamper_demonstration",
+        "authorized_price_inr": 3500,
+        "tampered_price_inr": 5000,
+        "integrity_check_passed": result.passed,
+        "block_reason": result.reason,
+        "changed_fields": result.changed_fields,
+        "message": "Cart integrity check caught the price change" if not result.passed else "Unexpected: check passed"
     }

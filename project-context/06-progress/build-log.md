@@ -168,6 +168,18 @@ Production bundle compiled successfully with zero type errors.
 
 ---
 
+### [2026-09-04 01:10 IST] [MILESTONE] Phase 8 — Adversarial Test Suite & Demo Preparation Complete
+
+- Implemented automated adversarial scenario generator `synthetic/scenarios.py` covering all 6 adversarial vectors + legitimate purchase.
+- Implemented `/demo/cart-tamper` demo endpoint to demonstrate cryptographic cart tampering detection.
+- Authored integration test suite `tests/integration/test_adversarial.py` (9 tests covering H1, A1-A6, 100% audit coverage, and chain integrity).
+- Verified: All 9 adversarial integration tests PASSED.
+- Verified: All 7 automated scenarios PASSED (100% block rate on threats).
+- Verified: `scripts/verify_audit_chain.py` independently validates 31 entries as unbroken.
+- Authored complete public-facing `README.md` with system overview, architecture diagram, and verification instructions.
+
+---
+
 ## Entry Guidelines
 
 **What MUST be logged:**
