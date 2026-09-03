@@ -1,7 +1,7 @@
 # agentguard/models.py
 from __future__ import annotations
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from pydantic import BaseModel, Field, field_validator
 
@@ -21,7 +21,7 @@ class BoundedIntent(BaseModel):
     currency: str = "INR"
     merchant_constraints: MerchantConstraints = Field(default_factory=MerchantConstraints)
     ttl_seconds: int = 3600
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     raw_input: str = ""
 
     @field_validator("category")
