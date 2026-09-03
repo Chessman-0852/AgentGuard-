@@ -1,0 +1,14 @@
+# policy.yaml — AgentGuard demo configuration
+# Amounts in INR (rupees). System converts to paise internally.
+
+max_transaction_amount: 7000
+max_daily_spend_per_agent: 15000
+requires_human_confirmation_above: 5000
+
+allowed_categories:
+  - footwear
+  - groceries
+  - electronics-accessories
+
+max_requests_per_minute_per_agent: 5
+idempotency_key_ttl: 24h

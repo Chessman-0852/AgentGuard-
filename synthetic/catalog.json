@@ -1,0 +1,16 @@
+{
+  "catalog": [
+    {"sku": "SHOE-001", "name": "Running Shoes Pro", "category": "footwear", "price_paise": 350000, "merchant_id": "merchant-001"},
+    {"sku": "SHOE-002", "name": "Trail Running Shoes", "category": "footwear", "price_paise": 450000, "merchant_id": "merchant-001"},
+    {"sku": "SHOE-003", "name": "Road Running Shoes Lite", "category": "footwear", "price_paise": 280000, "merchant_id": "merchant-001"},
+    {"sku": "SHOE-004", "name": "Marathon Racing Flats", "category": "footwear", "price_paise": 699900, "merchant_id": "merchant-001"},
+    {"sku": "GROC-001", "name": "Organic Muesli 1kg", "category": "groceries", "price_paise": 52000, "merchant_id": "merchant-002"},
+    {"sku": "GROC-002", "name": "Oat Milk 1L x6", "category": "groceries", "price_paise": 89400, "merchant_id": "merchant-002"},
+    {"sku": "GROC-003", "name": "Whey Protein 1kg", "category": "groceries", "price_paise": 249900, "merchant_id": "merchant-002"},
+    {"sku": "GROC-004", "name": "Electrolyte Sachets x20", "category": "groceries", "price_paise": 45000, "merchant_id": "merchant-002"},
+    {"sku": "ELEC-001", "name": "USB-C Hub 7-port", "category": "electronics-accessories", "price_paise": 189900, "merchant_id": "merchant-003"},
+    {"sku": "ELEC-002", "name": "Wireless Earbuds Sport", "category": "electronics-accessories", "price_paise": 399900, "merchant_id": "merchant-003"},
+    {"sku": "ELEC-003", "name": "Running GPS Watch Strap", "category": "electronics-accessories", "price_paise": 149900, "merchant_id": "merchant-003"},
+    {"sku": "ELEC-004", "name": "Heart Rate Monitor Chest Strap", "category": "electronics-accessories", "price_paise": 279900, "merchant_id": "merchant-003"}
+  ]
+}
