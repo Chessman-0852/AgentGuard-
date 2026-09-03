@@ -125,21 +125,46 @@ All four gate modules implemented and fully tested:
 - `agentguard/core/risk_checker.py` — advisory anomaly z-score only, NEVER blocks alone
 - `agentguard/core/idempotency_guard.py` — INSERT-then-catch-IntegrityError (race-safe)
 
-**Design note (idempotency):** INSERT-then-catch-IntegrityError is intentional. SELECT-then-INSERT has a TOCTOU race window. The UNIQUE PRIMARY KEY makes the INSERT atomic — only one concurrent thread wins. Documented here as security-critical non-obvious design.
-
-**Design note (anomaly score):** `compute_anomaly_score()` is advisory only. Returns 0.0 if fewer than 5 historical transactions. Appears in the audit log but NEVER contributes to a block decision.
-
 `pytest tests/unit/` → **33 passed, 0 failed, 0 regressions.**
 
 ---
 
-### [TEMPLATE — copy for each entry]
+### [2026-09-03 20:35 IST] [MILESTONE] Phase 3 — Cryptographic Audit Log Complete
 
-**[YYYY-MM-DD HH:MM IST] [TYPE] Short description**
+Implemented append-only hash pointer chain in SQLite (`audit_log.py`) and standalone CLI verification script `scripts/verify_audit_chain.py` requiring zero external dependencies. Verified chain intact across simulated transactions and confirmed tamper detection triggers on single-byte edits.
 
-Context:
-Decision/Failure/Fix:
-Impact:
+---
+
+### [2026-09-03 20:45 IST] [MILESTONE] Phase 4 — Groq Intent Parser & Explainer Complete
+
+Configured Groq tool-calling extraction pipeline. Resolved decommissioned model IDs by selecting active models (`qwen/qwen3.6-27b` with `qwen/qwen3.8-27b` fallback, `openai/gpt-oss-20b` for natural language block explainer). Verified 10/10 manual NL inputs and prompt injection handling.
+
+---
+
+### [2026-09-03 20:50 IST] [MILESTONE] Phase 5 — Razorpay Test-Mode Executor Complete
+
+Implemented `razorpay_client.py` enforcing `rzp_test_` key prefixes at startup. Resolved extra field rejections on Razorpay payment link endpoints. Verified live sandbox order creation and HMAC-SHA256 signature verification.
+
+---
+
+### [2026-09-03 21:30 IST] [MILESTONE] Phase 6 — FastAPI Pipeline Orchestration Complete
+
+All 5 gates wired sequentially behind `POST /api/v1/intents` with 100% audit log coverage. Implemented live policy views, per-agent spend limits, and HMAC webhook receivers. All smoke tests and unit regression tests (54/54) passing.
+
+---
+
+### [2026-09-04 00:50 IST] [DECISION] D3 Override — Full React/Vite Frontend Built for Production
+
+**Context:** Prompt instruction and Design Spec `08-design.md` required building the full interactive frontend (Landing Page + Multi-page Control Plane Dashboard) instead of a simple Streamlit MVP.
+
+**Implementation:**
+- Scaffolding: React 18, Vite, TypeScript, Tailwind CSS v3, Framer Motion, Lucide Icons, Recharts, React Router v6.
+- Status Translation Layer: Created `statusTranslations.ts` to ensure zero internal backend error codes or developer jargon reach any UI element.
+- Landing page with 11 sequential sections per §25.
+- Control Plane with 7 views: Overview (Golden Demo screen §29), Transactions, Attack Simulator, Audit Chain Ledger, Policies, Agent Governance, and Infrastructure Settings.
+- Complete responsive pass and accessible focus states across all interactive components.
+
+Production bundle compiled successfully with zero type errors.
 
 ---
 
