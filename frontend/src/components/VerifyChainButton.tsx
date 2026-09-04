@@ -53,12 +53,12 @@ export const VerifyChainButton: React.FC<VerifyChainButtonProps> = ({ onVerified
       <button
         onClick={handleVerify}
         disabled={verifying}
-        className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-accent/20 border border-accent/40 text-accent hover:bg-accent/30 rounded-lg text-xs font-semibold tracking-wide transition-all focus:ring-2 focus:ring-accent focus:outline-hidden disabled:opacity-50"
+        className="inline-flex items-center gap-2 px-4 py-1.5 bg-neon-pulse/15 border border-neon-pulse/40 text-neon-pulse hover:bg-neon-pulse/25 rounded-full text-xs font-semibold tracking-wide transition-all shadow-[0_0_15px_rgba(61,220,145,0.15)] focus:outline-hidden disabled:opacity-50"
       >
         {verifying ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
         ) : (
-          <ShieldCheck className="w-4 h-4" />
+          <ShieldCheck className="w-3.5 h-3.5" />
         )}
         <span>{verifying ? "Verifying Ledger..." : "Verify Audit Chain"}</span>
       </button>
@@ -67,19 +67,19 @@ export const VerifyChainButton: React.FC<VerifyChainButtonProps> = ({ onVerified
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in"
         >
-          <div className="bg-surface border border-border rounded-xl w-full max-w-lg p-6 shadow-2xl">
+          <div className="bg-surface border border-border rounded-[20px] w-full max-w-lg p-6 sm:p-7 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
               <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-accent" />
+                <ShieldCheck className="w-5 h-5 text-neon-pulse" />
                 <h3 className="text-base font-bold text-text-primary">
                   Cryptographic Audit Chain Verification
                 </h3>
               </div>
               <button
                 onClick={() => setModalOpen(false)}
-                className="text-text-secondary hover:text-text-primary text-sm p-1"
+                className="text-text-secondary hover:text-text-primary text-sm p-1 rounded-full hover:bg-surface-2"
                 aria-label="Close verification modal"
               >
                 ✕
@@ -90,14 +90,14 @@ export const VerifyChainButton: React.FC<VerifyChainButtonProps> = ({ onVerified
               Independent mathematical verification running on the SHA-256 hash pointer chain.
             </p>
 
-            {/* Terminal-like output display (§13) */}
-            <div className="bg-bg border border-border/80 rounded-lg p-3.5 font-mono text-xs text-text-primary/90 space-y-1.5 max-h-56 overflow-y-auto mb-4">
+            {/* Terminal-like output display */}
+            <div className="bg-[#0e1a19] border border-border/80 rounded-[14px] p-4 font-mono text-xs text-text-primary/90 space-y-1.5 max-h-56 overflow-y-auto mb-4">
               {terminalLogs.map((log, i) => (
                 <div
                   key={i}
                   className={`${
                     log.startsWith("✓")
-                      ? "text-success font-semibold"
+                      ? "text-neon-pulse font-semibold"
                       : log.startsWith("✕")
                       ? "text-danger font-semibold"
                       : "text-text-secondary"
@@ -110,9 +110,9 @@ export const VerifyChainButton: React.FC<VerifyChainButtonProps> = ({ onVerified
 
             {result && (
               <div
-                className={`p-3 rounded-lg border text-xs flex items-start gap-2.5 ${
+                className={`p-3.5 rounded-[14px] border text-xs flex items-start gap-2.5 ${
                   result.intact
-                    ? "bg-success/10 border-success/30 text-success"
+                    ? "bg-neon-pulse/10 border-neon-pulse/30 text-neon-pulse"
                     : "bg-danger/10 border-danger/30 text-danger"
                 }`}
               >
@@ -137,7 +137,7 @@ export const VerifyChainButton: React.FC<VerifyChainButtonProps> = ({ onVerified
             <div className="mt-5 flex justify-end">
               <button
                 onClick={() => setModalOpen(false)}
-                className="px-4 py-2 bg-surface-2 border border-border hover:bg-surface rounded-lg text-xs font-semibold text-text-primary transition-colors"
+                className="px-5 py-2 bg-surface-2 border border-border hover:bg-surface rounded-full text-xs font-semibold text-text-primary transition-colors"
               >
                 Done
               </button>

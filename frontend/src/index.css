@@ -3,24 +3,47 @@
 @tailwind utilities;
 
 :root {
-  --bg: #080B14;
-  --surface: #11161D;
-  --surface-2: #161C24;
-  --border: #26303A;
-  --text-primary: #E6E7EB;
-  --text-secondary: #A1A7B3;
-  --success: #22C55E;
-  --danger: #EF4444;
-  --warning: #F59E0B;
-  --info: #3B82F6;
-  --accent: #7C3AED;
+  /* 08-design.md Obsidian Theme Tokens */
+  --bg: #0e1a19;                 /* Deep Abyss canvas */
+  --surface: #132322;            /* Obsidian Shell */
+  --surface-2: #182e2c;          /* Deep Card variant */
+  --surface-hover: #1f3b38;
+  --border: #1e3835;             /* Subtle dark slate-teal border */
+  --border-focus: #3ddc91;
+  
+  --text-primary: #ffffff;       /* Pure White */
+  --text-secondary: #828786;     /* Slate Text */
+  --text-muted: #5e6b69;
+
+  --neon-pulse: #3ddc91;         /* Vivid Green Action & Signal */
+  --mint-whisper: #97ddbc;
+  --success: #3ddc91;            /* Allowed / Clean / Intact */
+  --danger: #ef4444;             /* Policy Violation / Threat / Blocked */
+  --danger-glow: rgba(239, 68, 68, 0.25);
+  --warning: #ffcd48;            /* Signal Yellow / Flagged */
+  --info: #3ddc91;
+  --accent: #3ddc91;             /* Primary Neon Accent */
 }
 
 body {
   background-color: var(--bg);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+
+/* Glowing aesthetic helpers */
+.glow-neon {
+  box-shadow: 0 0 25px rgba(61, 220, 145, 0.2), inset 0 0 15px rgba(61, 220, 145, 0.05);
+}
+
+.glow-danger {
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.2), inset 0 0 15px rgba(239, 68, 68, 0.05);
+}
+
+.glow-subtle {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Custom scrollbar for modern fintech look */
@@ -33,10 +56,10 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 3px;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a4755;
+  background: #2b504c;
 }
 
 @layer utilities {

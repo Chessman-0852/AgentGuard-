@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { submitIntent, IntentResponse } from "../lib/api";
 import { SecurityPipeline, GateExecution } from "./SecurityPipeline";
 import { getBlockReasonDetail } from "../lib/statusTranslations";
-import { ShieldAlert, Play, Loader2, RefreshCw } from "lucide-react";
+import { ShieldAlert, Play, Loader2 } from "lucide-react";
 
 export interface ScenarioDefinition {
   id: string;
@@ -77,19 +77,17 @@ export const AttackSimulator: React.FC<AttackSimulatorProps> = ({
     setRunningId(scenario.id);
     setActiveResult(null);
 
-    // If it's a replay attack, run it once first to establish the state, then re-run to trigger replay detection
     if (scenario.id === "replay-attack") {
       try {
         await submitIntent("AgentBot-001", scenario.inputPayload);
       } catch {
-        // First submission might already exist, which is fine
+        // Initial submission
       }
     }
 
     try {
       const resp = await submitIntent("AgentBot-001", scenario.inputPayload);
 
-      // Determine the gate states based on outcome
       const isBlocked = resp.status === "blocked";
       const reasonCode = resp.block_reason || "";
 
@@ -126,7 +124,9 @@ export const AttackSimulator: React.FC<AttackSimulatorProps> = ({
         }
       }
 
+      // 6-stage pipeline
       const calculatedGates: GateExecution[] = [
+        { id: "intent", status: "pass" },
         { id: "policy", status: policyStatus },
         { id: "cart", status: cartStatus },
         { id: "risk", status: riskStatus },
@@ -148,11 +148,11 @@ export const AttackSimulator: React.FC<AttackSimulatorProps> = ({
     }
   };
 
-  const displayedScenarios = compact ? ATTACK_SCENARIOS.slice(0, 3) : ATTACK_SCENARIOS;
+  const displayedScenarios = compact ? ATTACK_SCENARIOS.slice(0, 2) : ATTACK_SCENARIOS;
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {displayedScenarios.map((sc) => {
           const isRunning = runningId === sc.id;
           const isCurrentResult = activeResult?.scenarioId === sc.id;
@@ -160,40 +160,40 @@ export const AttackSimulator: React.FC<AttackSimulatorProps> = ({
           return (
             <div
               key={sc.id}
-              className={`bg-surface border rounded-xl p-4 flex flex-col justify-between transition-all duration-200 ${
+              className={`bg-surface border rounded-[20px] p-5 flex flex-col justify-between transition-all duration-200 ${
                 isCurrentResult
-                  ? "border-accent ring-1 ring-accent/30"
-                  : "border-border hover:border-[#3d4b5a]"
+                  ? "border-neon-pulse/80 shadow-[0_0_20px_rgba(61,220,145,0.15)]"
+                  : "border-border hover:border-border-focus"
               }`}
             >
               <div>
-                <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex items-center gap-2 mb-2">
                   <ShieldAlert className="w-4 h-4 text-warning" />
                   <h4 className="text-sm font-bold text-text-primary">{sc.name}</h4>
                 </div>
                 <p className="text-xs text-text-secondary leading-relaxed mb-3">
                   {sc.description}
                 </p>
-                <div className="bg-bg border border-border/80 rounded p-2 text-[11px] font-mono text-text-secondary truncate mb-3">
-                  <span className="text-text-primary">Agent prompt: </span>"{sc.inputPayload}"
+                <div className="bg-[#0e1a19] border border-border/80 rounded-[12px] p-2.5 text-[11px] font-mono text-text-secondary truncate mb-4">
+                  <span className="text-neon-pulse font-medium">Payload: </span>"{sc.inputPayload}"
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-border/60 flex items-center justify-between">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-text-secondary">
+              <div className="pt-3 border-t border-border/60 flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-text-secondary">
                   Target: {sc.expectedBlockGate}
                 </span>
                 <button
                   onClick={() => handleRunAttack(sc)}
                   disabled={isRunning}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-danger/15 border border-danger/30 text-danger hover:bg-danger/25 rounded-lg text-xs font-semibold tracking-wide transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-danger/15 border border-danger/40 text-danger hover:bg-danger/25 rounded-full text-xs font-semibold tracking-wide transition-colors disabled:opacity-50"
                 >
                   {isRunning ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
                     <Play className="w-3 h-3 fill-current" />
                   )}
-                  <span>{isRunning ? "Simulating..." : "Run Attack"}</span>
+                  <span>{isRunning ? "Simulating..." : "Fire Test"}</span>
                 </button>
               </div>
             </div>
@@ -203,17 +203,17 @@ export const AttackSimulator: React.FC<AttackSimulatorProps> = ({
 
       {/* Live Simulation Response Banner */}
       {activeResult && (
-        <div className="bg-surface-2 border border-border rounded-xl p-5 mt-4 animate-in fade-in">
+        <div className="bg-[#0e1a19] border border-border rounded-[20px] p-5 mt-4 animate-in fade-in">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <span className="text-xs font-mono uppercase tracking-wider text-text-secondary">
-                Simulation Live Interception
+                Simulation Result
               </span>
               <span
-                className={`text-xs font-bold font-mono px-2 py-0.5 rounded ${
+                className={`text-xs font-bold font-mono px-3 py-1 rounded-full ${
                   activeResult.response.status === "blocked"
-                    ? "bg-danger/20 text-danger border border-danger/30"
-                    : "bg-success/20 text-success border border-success/30"
+                    ? "bg-danger/20 text-danger border border-danger/40 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                    : "bg-neon-pulse/20 text-neon-pulse border border-neon-pulse/40 shadow-[0_0_15px_rgba(61,220,145,0.2)]"
                 }`}
               >
                 {activeResult.response.status === "blocked" ? "✕ INTERCEPTED & BLOCKED" : "✓ APPROVED"}
@@ -231,16 +231,16 @@ export const AttackSimulator: React.FC<AttackSimulatorProps> = ({
             <SecurityPipeline gates={activeResult.gates} />
           </div>
 
-          <div className="bg-bg border border-border rounded-lg p-3 text-xs flex items-center justify-between">
+          <div className="bg-surface border border-border rounded-[14px] p-4 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <span className="font-semibold text-text-primary block">
+              <span className="font-semibold text-text-primary block mb-0.5">
                 {getBlockReasonDetail(activeResult.response.block_reason).headline}
               </span>
               <span className="text-text-secondary">
                 {getBlockReasonDetail(activeResult.response.block_reason).explanation}
               </span>
             </div>
-            <div className="font-mono text-success text-xs shrink-0 pl-4">
+            <div className="font-mono text-neon-pulse text-xs shrink-0 font-semibold">
               Money moved: ₹0.00
             </div>
           </div>

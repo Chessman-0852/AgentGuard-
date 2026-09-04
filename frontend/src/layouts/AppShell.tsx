@@ -49,34 +49,34 @@ export const AppShell: React.FC = () => {
   return (
     <div className="min-h-screen bg-bg text-text-primary flex flex-col md:flex-row font-sans">
       {/* Sidebar for Desktop */}
-      <aside className="hidden md:flex flex-col justify-between w-60 bg-surface border-r border-border shrink-0 p-4 min-h-screen">
+      <aside className="hidden md:flex flex-col justify-between w-64 bg-surface border-r border-border shrink-0 p-5 min-h-screen">
         <div>
           {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-2.5 px-2 py-3 mb-6 group">
-            <div className="w-8 h-8 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center text-accent group-hover:scale-105 transition-transform">
+          <NavLink to="/" className="flex items-center gap-3 px-2 py-3 mb-6 group">
+            <div className="w-9 h-9 rounded-[12px] bg-neon-pulse/10 border border-neon-pulse/30 flex items-center justify-center text-neon-pulse group-hover:scale-105 transition-transform shadow-[0_0_15px_rgba(61,220,145,0.2)]">
               <Shield className="w-4 h-4" />
             </div>
             <div>
               <span className="font-bold text-base tracking-tight text-text-primary block">
                 AgentGuard
               </span>
-              <span className="text-[10px] text-text-secondary tracking-wider uppercase font-mono">
-                Commerce Firewall
+              <span className="text-[10px] text-neon-pulse tracking-wider uppercase font-mono">
+                Security Console
               </span>
             </div>
           </NavLink>
 
           {/* Navigation Links */}
-          <nav className="space-y-1">
+          <nav className="space-y-1.5">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+                  `flex items-center gap-3 px-3.5 py-2.5 rounded-full text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-accent/15 text-accent border border-accent/30 font-semibold"
+                      ? "bg-neon-pulse/15 text-neon-pulse border border-neon-pulse/30 font-semibold shadow-[0_0_15px_rgba(61,220,145,0.1)]"
                       : "text-text-secondary hover:text-text-primary hover:bg-surface-2"
                   }`
                 }
@@ -89,12 +89,12 @@ export const AppShell: React.FC = () => {
         </div>
 
         {/* Footer info */}
-        <div className="pt-4 border-t border-border/80">
+        <div className="pt-4 border-t border-border/70">
           <NavLink
             to="/"
-            className="flex items-center justify-between text-xs text-text-secondary hover:text-text-primary px-2 py-1.5 rounded transition-colors"
+            className="flex items-center justify-between text-xs text-text-secondary hover:text-neon-pulse px-2 py-1.5 rounded transition-colors"
           >
-            <span>Public Landing Page</span>
+            <span>Landing Page</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </NavLink>
           <div className="text-[10px] font-mono text-text-secondary px-2 mt-2">
@@ -106,12 +106,12 @@ export const AppShell: React.FC = () => {
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-surface border-b border-border">
         <NavLink to="/" className="flex items-center gap-2">
-          <Shield className="w-5 h-5 text-accent" />
+          <Shield className="w-5 h-5 text-neon-pulse" />
           <span className="font-bold text-sm">AgentGuard</span>
         </NavLink>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-[11px] font-mono">
-            <span className={`w-2 h-2 rounded-full ${isLive ? "bg-success animate-pulse" : "bg-danger"}`} />
+            <span className={`w-2 h-2 rounded-full ${isLive ? "bg-neon-pulse animate-pulse shadow-[0_0_6px_rgba(61,220,145,0.8)]" : "bg-danger"}`} />
             <span className="text-text-secondary">{isLive ? "LIVE" : "OFFLINE"}</span>
           </div>
           <button
@@ -134,9 +134,9 @@ export const AppShell: React.FC = () => {
               end={item.end}
               onClick={() => setMobileNavOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium ${
+                `flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium ${
                   isActive
-                    ? "bg-accent/20 text-accent font-bold"
+                    ? "bg-neon-pulse/20 text-neon-pulse font-bold"
                     : "text-text-secondary hover:text-text-primary"
                 }`
               }
@@ -151,23 +151,23 @@ export const AppShell: React.FC = () => {
       {/* Main Content Area with Topbar */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="hidden md:flex items-center justify-between px-8 py-4 border-b border-border bg-surface/50 backdrop-blur-xs sticky top-0 z-20">
+        <header className="hidden md:flex items-center justify-between px-8 py-4 border-b border-border bg-surface/50 backdrop-blur-md sticky top-0 z-20">
           <div className="flex items-center gap-3">
-            <h1 className="text-base font-bold text-text-primary capitalize">
+            <h2 className="text-sm font-semibold text-text-primary capitalize tracking-tight">
               {navItems.find((item) =>
                 item.end
                   ? location.pathname === item.to
                   : location.pathname.startsWith(item.to)
               )?.label || "Control Plane"}
-            </h1>
+            </h2>
             <span className="text-text-secondary text-xs">•</span>
-            <span className="text-xs text-text-secondary">AI Payment Gateway Monitoring</span>
+            <span className="text-xs text-text-secondary">Commerce Firewall for Autonomous AI</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-2 border border-border text-xs font-mono">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-xs font-mono">
               <span
-                className={`w-2 h-2 rounded-full ${isLive ? "bg-success animate-pulse" : "bg-danger"}`}
+                className={`w-2 h-2 rounded-full ${isLive ? "bg-neon-pulse animate-pulse shadow-[0_0_8px_rgba(61,220,145,0.8)]" : "bg-danger"}`}
               />
               <span className="text-text-primary font-semibold">{isLive ? "SYSTEM LIVE" : "DISCONNECTED"}</span>
             </div>

@@ -121,35 +121,41 @@ export const GATE_DISPLAY_INFO: Record<
   string,
   { name: string; description: string; passText: string; failText: string }
 > = {
+  intent: {
+    name: "Intent",
+    description: "Extracts structured commerce parameters from natural language via AI model.",
+    passText: "Intent Understood",
+    failText: "Parsing Failed",
+  },
   policy: {
-    name: "Policy Limits",
+    name: "Policy",
     description: "Evaluates max transaction cap, daily budget, and allowed product categories.",
-    passText: "Within policy bounds",
-    failText: "Policy rule violated",
+    passText: "Policy Passed",
+    failText: "Policy Breach",
   },
   cart: {
-    name: "Cart Verification",
+    name: "Cart",
     description: "Cryptographically verifies price and item integrity against initial authorization snapshot.",
-    passText: "Items & prices verified",
-    failText: "Cart tampering detected",
+    passText: "Cart Verified",
+    failText: "Cart Tampered",
   },
   risk: {
-    name: "Risk Assessment",
-    description: "Evaluates anomaly deviation against historic transaction baseline.",
-    passText: "Normal risk profile",
-    failText: "Elevated anomaly risk",
+    name: "Risk",
+    description: "Evaluates anomaly deviation and prompt injection vectors.",
+    passText: "Risk Normal",
+    failText: "Risk Flagged",
   },
   idempotency: {
-    name: "Replay Protection",
+    name: "Replay",
     description: "Ensures identical intents cannot trigger duplicate charges or cross-agent replaying.",
-    passText: "Unique intent",
-    failText: "Duplicate replay blocked",
+    passText: "Unique Intent",
+    failText: "Duplicate Blocked",
   },
   payment: {
-    name: "Payment Gateway",
-    description: "Secures authorized test-mode checkout execution with Razorpay.",
-    passText: "Payment link created",
-    failText: "Execution halted",
+    name: "Payment",
+    description: "Secures authorized checkout execution with payment gateway.",
+    passText: "Authorized",
+    failText: "Payment Halted",
   },
 };
 
