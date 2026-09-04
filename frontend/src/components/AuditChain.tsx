@@ -53,9 +53,8 @@ export const AuditChain: React.FC<AuditChainProps> = ({
             <div
               key={entry.entry_id}
               onClick={() => onEntryClick && onEntryClick(entry)}
-              className={`p-3.5 rounded-[14px] border border-border/70 bg-[#0e1a19] transition-all duration-150 ${
-                onEntryClick ? "hover:border-neon-pulse/40 cursor-pointer" : ""
-              }`}
+              className={`p-3.5 rounded-[14px] border border-border/70 bg-[#0e1a19] transition-all duration-150 ${onEntryClick ? "hover:border-neon-pulse/40 cursor-pointer" : ""
+                }`}
             >
               <div className="flex items-center justify-between mb-2 text-xs">
                 <div className="flex items-center gap-2">

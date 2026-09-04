@@ -1,6 +1,7 @@
-﻿# Phase 8 — Adversarial Test Suite & Demo Preparation
+# Phase 8 — Adversarial Test Suite & Demo Preparation
 
-> **Status:** [ ] Not started
+> **Complete Pitch & Recording Guide:** See [`Docs/VIDEO_DEMO_GUIDE.md`](file:///c:/Users/samik/Desktop/AgentGuard/Docs/VIDEO_DEMO_GUIDE.md) for the 5-minute video script, screen directions, recording checklist, and Q&A.
+> **Status:** [ ] Ready for recording
 > **Estimated time:** 3.5 hours
 > **Day:** 2, third block + recording
 > **Depends on:** All previous phases (complete working system)

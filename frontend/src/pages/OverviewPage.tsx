@@ -5,6 +5,8 @@ import {
   AuditEntryPayload,
   fetchPolicy,
   PolicyResponse,
+  submitIntent,
+  IntentResponse,
 } from "../lib/api";
 import { MetricCard } from "../components/MetricCard";
 import { TransactionTable } from "../components/TransactionTable";
@@ -12,6 +14,7 @@ import { TransactionDrawer } from "../components/TransactionDrawer";
 import { SecurityPipeline, GateExecution } from "../components/SecurityPipeline";
 import { AttackSimulator } from "../components/AttackSimulator";
 import { AuditChain } from "../components/AuditChain";
+import { getBlockReasonDetail } from "../lib/statusTranslations";
 import {
   Bot,
   BrainCircuit,
@@ -20,6 +23,11 @@ import {
   ShieldAlert,
   ShieldCheck,
   Zap,
+  Play,
+  Loader2,
+  ExternalLink,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 export const OverviewPage: React.FC = () => {
@@ -28,6 +36,73 @@ export const OverviewPage: React.FC = () => {
   const [selectedEntry, setSelectedEntry] = useState<AuditEntryPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [monitorActive, setMonitorActive] = useState(true);
+
+  // Custom Intent Tester state
+  const [customAgentId, setCustomAgentId] = useState("AgentBot-901");
+  const [customInput, setCustomInput] = useState("buy running shoes, budget 3500");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customResponse, setCustomResponse] = useState<IntentResponse | null>(null);
+  const [customGates, setCustomGates] = useState<GateExecution[] | null>(null);
+
+  const handleCustomSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customInput.trim() || isSubmitting) return;
+    setIsSubmitting(true);
+    setCustomResponse(null);
+    setCustomGates(null);
+
+    try {
+      const resp = await submitIntent(customAgentId.trim() || "AgentBot-901", customInput.trim());
+      setCustomResponse(resp);
+
+      const isBlocked = resp.status === "blocked";
+      const reasonCode = resp.block_reason || "";
+
+      let policyStatus: "pass" | "fail" | "skipped" = "pass";
+      let cartStatus: "pass" | "fail" | "skipped" = "pass";
+      let riskStatus: "pass" | "fail" | "skipped" = "pass";
+      let idempotencyStatus: "pass" | "fail" | "skipped" = "pass";
+
+      if (isBlocked) {
+        if (
+          reasonCode === "exceeds_transaction_cap" ||
+          reasonCode === "category_not_allowed" ||
+          reasonCode === "confirmation_required" ||
+          reasonCode === "exceeds_daily_cap"
+        ) {
+          policyStatus = "fail";
+          cartStatus = "skipped";
+          riskStatus = "skipped";
+          idempotencyStatus = "skipped";
+        } else if (reasonCode === "cart_integrity_failure") {
+          policyStatus = "pass";
+          cartStatus = "fail";
+          riskStatus = "skipped";
+          idempotencyStatus = "skipped";
+        } else if (reasonCode === "replay_detected") {
+          policyStatus = "pass";
+          cartStatus = "pass";
+          riskStatus = "pass";
+          idempotencyStatus = "fail";
+        }
+      }
+
+      setCustomGates([
+        { id: "intent", status: "pass" },
+        { id: "policy", status: policyStatus },
+        { id: "cart", status: cartStatus },
+        { id: "risk", status: riskStatus },
+        { id: "idempotency", status: idempotencyStatus },
+        { id: "payment", status: isBlocked ? "skipped" : "pass" },
+      ]);
+
+      await loadData();
+    } catch (err: any) {
+      console.error("Submit intent error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -239,6 +314,110 @@ export const OverviewPage: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Interactive Intent Gateway Input Widget */}
+      <div className="bg-surface border border-border rounded-[20px] p-6 shadow-md relative overflow-hidden">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-sm font-bold text-text-primary flex items-center gap-2 font-sans">
+              <Sparkles className="w-4 h-4 text-neon-pulse" />
+              <span>Submit Purchase Intent</span>
+            </h2>
+            <p className="text-xs text-text-secondary mt-0.5 font-sans">
+              Simulate an autonomous buyer agent request through all 5 deterministic security gates.
+            </p>
+          </div>
+          <span className="text-[10px] font-mono uppercase bg-neon-pulse/10 text-neon-pulse border border-neon-pulse/30 px-2.5 py-1 rounded-full">
+            Gateway Endpoint Active
+          </span>
+        </div>
+
+        <form onSubmit={handleCustomSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div className="sm:col-span-1">
+              <label className="block text-[11px] font-mono text-text-secondary uppercase mb-1">
+                Agent ID
+              </label>
+              <input
+                type="text"
+                value={customAgentId}
+                onChange={(e) => setCustomAgentId(e.target.value)}
+                placeholder="AgentBot-901"
+                className="w-full bg-[#0e1a19] border border-border focus:border-neon-pulse text-text-primary text-xs font-mono rounded-[12px] px-3 py-2.5 outline-none transition-all"
+              />
+            </div>
+            <div className="sm:col-span-3">
+              <label className="block text-[11px] font-mono text-text-secondary uppercase mb-1">
+                Natural Language Intent Payload
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={customInput}
+                  onChange={(e) => setCustomInput(e.target.value)}
+                  placeholder="e.g. buy running shoes, budget 3500"
+                  className="w-full bg-[#0e1a19] border border-border focus:border-neon-pulse text-text-primary text-xs font-mono rounded-[12px] px-3.5 py-2.5 outline-none transition-all"
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !customInput.trim()}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-neon-pulse text-[#071110] hover:bg-neon-pulse/90 rounded-[12px] text-xs font-bold font-sans tracking-wide shrink-0 transition-all shadow-[0_0_15px_rgba(61,220,145,0.3)] disabled:opacity-50 cursor-pointer"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                  )}
+                  <span>{isSubmitting ? "Processing..." : "Execute Pipeline"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        {/* Live Submission Result */}
+        {customResponse && (
+          <div className="mt-5 pt-4 border-t border-border/70 space-y-4 animate-in fade-in">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {customResponse.status === "allowed" ? (
+                  <CheckCircle2 className="w-4 h-4 text-neon-pulse" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-danger" />
+                )}
+                <span className="text-xs font-bold text-text-primary">
+                  Decision: {customResponse.status.toUpperCase()}
+                </span>
+                {customResponse.block_reason && (
+                  <span className="text-[11px] font-mono text-danger bg-danger/10 border border-danger/30 px-2 py-0.5 rounded-full">
+                    {customResponse.block_reason}
+                  </span>
+                )}
+              </div>
+              {customResponse.payment_link_url && (
+                <a
+                  href={customResponse.payment_link_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-neon-pulse/20 text-neon-pulse border border-neon-pulse/40 hover:bg-neon-pulse/30 rounded-full text-xs font-semibold font-mono tracking-wide transition-all shadow-[0_0_12px_rgba(61,220,145,0.2)]"
+                >
+                  <span>Open Razorpay Payment Link</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
+
+            {customGates && <SecurityPipeline gates={customGates} />}
+
+            {customResponse.block_explanation && (
+              <div className="bg-[#0e1a19] border border-border rounded-[12px] p-3 text-xs text-text-secondary">
+                <span className="font-semibold text-text-primary block mb-1">LLM Explanation:</span>
+                "{customResponse.block_explanation}"
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 6-Stage Security Pipeline: Intent → Policy → Cart → Risk → Replay → Payment */}
