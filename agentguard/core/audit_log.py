@@ -131,12 +131,12 @@ def _first_block_reason(*results) -> str | None:
 
 
 def get_audit_entries(db, limit: int = 100, offset: int = 0) -> list[dict]:
-    """Return audit entries ordered by entry_id ASC (chronological)."""
+    """Return audit entries ordered by entry_id DESC (most recent first)."""
     rows = db.execute(
         text("""
             SELECT entry_id, prev_hash, entry_hash, agent_id, timestamp, payload, final_decision, block_reason
             FROM audit_log
-            ORDER BY entry_id ASC
+            ORDER BY entry_id DESC
             LIMIT :lim OFFSET :off
         """),
         {"lim": limit, "off": offset}
